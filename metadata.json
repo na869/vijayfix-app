@@ -1,0 +1,8 @@
+{
+  "name": "VijayFix Web",
+  "description": "A React/Tailwind MVP for the VijayFix hyperlocal technician booking service. Features phone auth simulation, service selection, AI-powered appliance diagnosis using Gemini, real-time technician locator simulation, and booking flow.",
+  "requestFramePermissions": [
+    "camera",
+    "geolocation"
+  ]
+}
