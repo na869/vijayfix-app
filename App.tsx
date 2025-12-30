@@ -6,6 +6,7 @@ import { MapPlaceholder } from './components/MapPlaceholder';
 import { Sidebar } from './components/Sidebar';
 import { ChatWindow } from './components/ChatWindow';
 import { RazorpayMock } from './components/RazorpayMock';
+import { MyBookings } from './components/MyBookings';
 import { diagnoseIssue } from './services/geminiService';
 import { 
   Phone, 
@@ -355,34 +356,6 @@ const App: React.FC = () => {
     </div>
   );
 
-  const renderHistory = () => (
-    <div className="min-h-screen bg-gray-50">
-      <div className="p-4 bg-white shadow-sm flex items-center gap-2 sticky top-0 z-10">
-        <button onClick={() => setCurrentPage('HOME')} className="p-2 -ml-2">
-          <ChevronLeft />
-        </button>
-        <h2 className="font-bold text-lg">My Bookings</h2>
-      </div>
-      <div className="p-4 space-y-4">
-        {allBookings.map((booking) => (
-          <div key={booking.id} className="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-            <div className="flex justify-between items-start mb-2">
-               <h3 className="font-bold text-gray-800">{booking.serviceType}</h3>
-               <span className={`px-2 py-0.5 rounded text-xs uppercase font-bold ${
-                 booking.status === 'completed' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'
-               }`}>{booking.status}</span>
-            </div>
-            <div className="flex justify-between text-sm text-gray-600">
-               <span>{booking.technicianName}</span>
-               <span className="font-medium">₹{booking.totalAmount}</span>
-            </div>
-            <div className="text-xs text-gray-400 mt-1">{booking.date}</div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-
   const renderAdmin = () => {
     const totalRevenue = allBookings.reduce((sum, b) => sum + (b.status === 'completed' ? b.totalAmount : 0), 0);
     const completedJobs = allBookings.filter(b => b.status === 'completed').length;
@@ -639,7 +612,7 @@ const App: React.FC = () => {
              >
                 <MessageSquare size={20} />
                 {getUnreadCount() > 0 && (
-                  <span className="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></span>
+                  <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border border-blue-900"></span>
                 )}
              </button>
           </div>
@@ -937,7 +910,17 @@ const App: React.FC = () => {
 
       {currentPage === 'AUTH' && renderAuth()}
       {currentPage === 'HOME' && renderHome()}
-      {currentPage === 'HISTORY' && renderHistory()}
+      {currentPage === 'HISTORY' && (
+         <MyBookings 
+           bookings={allBookings} 
+           onBack={() => setCurrentPage('HOME')}
+           onViewBooking={(booking) => {
+              if (['pending', 'confirmed', 'in-progress', 'payment-pending'].includes(booking.status)) {
+                setCurrentPage('TRACKING');
+              }
+           }}
+         />
+      )}
       {currentPage === 'ADMIN' && renderAdmin()}
       {currentPage === 'DIAGNOSIS' && renderDiagnosis()}
       {currentPage === 'TECH_SELECT' && renderTechSelect()}
